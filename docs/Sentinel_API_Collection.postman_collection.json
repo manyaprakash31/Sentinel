@@ -1,0 +1,162 @@
+{
+  "info": {
+    "name": "Sentinel - Cybersecurity Operations Platform",
+    "_postman_id": "c1f786d1-80f4-4b47-8a84-0a990ecbc78d",
+    "description": "Defensive Security Operations Center (SOC) API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login - Admin",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": { "raw": "http://localhost:8085/api/auth/login", "protocol": "http", "host": ["localhost"], "port": "8085", "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"analyst_demo\",\n  \"email\": \"analyst_demo@sentinel.sec\",\n  \"password\": \"SecurePass@123\",\n  \"fullName\": \"Demo Analyst\",\n  \"roles\": [\"ANALYST\"]\n}"
+            },
+            "url": { "raw": "http://localhost:8085/api/auth/register", "protocol": "http", "host": ["localhost"], "port": "8085", "path": ["api", "auth", "register"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Telemetry Events",
+      "item": [
+        {
+          "name": "Ingest Security Event",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventType\": \"LOGIN_FAILURE\",\n  \"source\": \"GatewayAuth\",\n  \"sourceIp\": \"198.51.100.99\",\n  \"username\": \"target_user\",\n  \"severity\": \"MEDIUM\",\n  \"message\": \"Repeated failed attempt\",\n  \"metadata\": \"{\\\"client\\\":\\\"curl/8.0\\\"}\"\n}"
+            },
+            "url": { "raw": "http://localhost:8085/api/events/ingest", "protocol": "http", "host": ["localhost"], "port": "8085", "path": ["api", "events", "ingest"] }
+          }
+        },
+        {
+          "name": "Get Events (Paginated)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": { "raw": "http://localhost:8085/api/events?page=0&size=20", "protocol": "http", "host": ["localhost"], "port": "8085", "path": ["api", "events"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Alerts",
+      "item": [
+        {
+          "name": "Get Alerts",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": { "raw": "http://localhost:8085/api/alerts", "protocol": "http", "host": ["localhost"], "port": "8085", "path": ["api", "alerts"] }
+          }
+        },
+        {
+          "name": "Acknowledge Alert",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": { "raw": "http://localhost:8085/api/alerts/1/acknowledge", "protocol": "http", "host": ["localhost"], "port": "8085", "path": ["api", "alerts", "1", "acknowledge"] }
+          }
+        },
+        {
+          "name": "Resolve Alert",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": { "raw": "http://localhost:8085/api/alerts/1/resolve", "protocol": "http", "host": ["localhost"], "port": "8085", "path": ["api", "alerts", "1", "resolve"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Incidents",
+      "item": [
+        {
+          "name": "Create Incident",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Suspicious API Sweeping Activity\",\n  \"description\": \"Investigation initiated from alert #1\",\n  \"severity\": \"HIGH\",\n  \"alertIds\": [1]\n}"
+            },
+            "url": { "raw": "http://localhost:8085/api/incidents", "protocol": "http", "host": ["localhost"], "port": "8085", "path": ["api", "incidents"] }
+          }
+        },
+        {
+          "name": "Add Incident Note",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Investigated perimeter firewall logs. IP block rule instituted.\"\n}"
+            },
+            "url": { "raw": "http://localhost:8085/api/incidents/1/notes", "protocol": "http", "host": ["localhost"], "port": "8085", "path": ["api", "incidents", "1", "notes"] }
+          }
+        },
+        {
+          "name": "Resolve Incident",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": { "raw": "http://localhost:8085/api/incidents/1/resolve", "protocol": "http", "host": ["localhost"], "port": "8085", "path": ["api", "incidents", "1", "resolve"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard & Metrics",
+      "item": [
+        {
+          "name": "Get Summary",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": { "raw": "http://localhost:8085/api/dashboard/summary", "protocol": "http", "host": ["localhost"], "port": "8085", "path": ["api", "dashboard", "summary"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Audit Logs",
+      "item": [
+        {
+          "name": "Get Audit Trail",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": { "raw": "http://localhost:8085/api/audit-logs", "protocol": "http", "host": ["localhost"], "port": "8085", "path": ["api", "audit-logs"] }
+          }
+        }
+      ]
+    }
+  ]
+}

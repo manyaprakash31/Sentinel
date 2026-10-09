@@ -1,0 +1,13 @@
+package com.sentinel.entity;
+
+public enum EventType {
+    LOGIN_SUCCESS,
+    LOGIN_FAILURE,
+    MULTIPLE_LOGIN_FAILURES,
+    PASSWORD_CHANGE,
+    UNUSUAL_LOGIN,
+    ACCESS_DENIED,
+    SUSPICIOUS_ACTIVITY,
+    SERVICE_FAILURE,
+    ADMIN_ACTION
+}
