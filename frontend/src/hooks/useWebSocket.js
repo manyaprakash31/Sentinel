@@ -7,7 +7,9 @@ export const useWebSocket = (topicHandlers = {}) => {
 
   useEffect(() => {
     // Factory for SockJS connection fallback
-    const socketFactory = () => new SockJS('/ws');
+    const rawApiUrl = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '').replace(/\/api$/, '');
+    const wsUrl = import.meta.env.VITE_WS_URL || (rawApiUrl ? `${rawApiUrl}/ws` : '/ws');
+    const socketFactory = () => new SockJS(wsUrl);
 
     const client = new Client({
       webSocketFactory: socketFactory,
