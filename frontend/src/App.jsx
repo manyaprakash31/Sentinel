@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { MainLayout } from './layouts/MainLayout';
 import { LoginPage } from './pages/LoginPage';
+import { SignupPage } from './pages/SignupPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { EventsPage } from './pages/EventsPage';
 import { AlertsPage } from './pages/AlertsPage';
@@ -16,7 +17,17 @@ import { ProfilePage } from './pages/ProfilePage';
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { user, loading, hasRole } = useAuth();
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#07090e] flex items-center justify-center text-cyan-400 font-mono text-xs">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+          VERIFYING SESSION CREDENTIALS...
+        </div>
+      </div>
+    );
+  }
+
   if (!user) return <Navigate to="/login" replace />;
   if (requiredRole && !hasRole(requiredRole)) return <Navigate to="/" replace />;
 
@@ -29,6 +40,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
 
           <Route
             path="/"
@@ -45,7 +57,7 @@ export default function App() {
             <Route
               path="rules"
               element={
-                <ProtectedRoute requiredRole="ANALYST">
+                <ProtectedRoute requiredRole="ADMIN">
                   <RulesPage />
                 </ProtectedRoute>
               }

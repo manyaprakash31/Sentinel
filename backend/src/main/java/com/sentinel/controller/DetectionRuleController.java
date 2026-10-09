@@ -31,7 +31,7 @@ public class DetectionRuleController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<DetectionRuleDto.Response>> createRule(
             @Valid @RequestBody DetectionRuleDto.CreateRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -41,7 +41,7 @@ public class DetectionRuleController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<DetectionRuleDto.Response>> updateRule(
             @PathVariable Long id,
             @RequestBody DetectionRuleDto.UpdateRequest request,

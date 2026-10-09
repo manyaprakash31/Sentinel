@@ -7,18 +7,40 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Validate session against backend /api/auth/me on mount or reload
   useEffect(() => {
-    const savedUser = localStorage.getItem('sentinel_user');
-    const token = localStorage.getItem('sentinel_token');
-    if (savedUser && token) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (e) {
-        localStorage.removeItem('sentinel_user');
-        localStorage.removeItem('sentinel_token');
+    const verifySession = async () => {
+      const token = localStorage.getItem('sentinel_token');
+      if (!token) {
+        setLoading(false);
+        return;
       }
-    }
-    setLoading(false);
+
+      try {
+        const res = await api.get('/auth/me');
+        if (res.success && res.data) {
+          const freshUser = {
+            id: res.data.id,
+            username: res.data.username,
+            email: res.data.email,
+            fullName: res.data.fullName,
+            roles: res.data.roles,
+            token,
+          };
+          setUser(freshUser);
+          localStorage.setItem('sentinel_user', JSON.stringify(freshUser));
+        } else {
+          logout();
+        }
+      } catch (err) {
+        console.warn('Session verification failed, logging out:', err);
+        logout();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifySession();
   }, []);
 
   const login = async (username, password) => {
@@ -44,20 +66,21 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('sentinel_token');
     localStorage.removeItem('sentinel_user');
     setUser(null);
-    window.location.href = '/login';
   };
 
   const hasRole = (role) => {
     if (!user || !user.roles) return false;
     const target = role.startsWith('ROLE_') ? role : `ROLE_${role}`;
-    return user.roles.includes(target) || user.roles.includes(role);
+    const cleanRole = role.replace('ROLE_', '');
+    return user.roles.includes(target) || user.roles.includes(cleanRole);
   };
 
   const isAdmin = () => hasRole('ADMIN');
   const isAnalyst = () => hasRole('ANALYST') || hasRole('ADMIN');
+  const isViewerOnly = () => !isAnalyst() && !isAdmin();
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, hasRole, isAdmin, isAnalyst }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, hasRole, isAdmin, isAnalyst, isViewerOnly, setUser }}>
       {children}
     </AuthContext.Provider>
   );

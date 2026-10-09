@@ -52,38 +52,9 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void seedUsers() {
-        if (!userRepository.existsByUsername("admin")) {
-            AuthDto.RegisterRequest adminReq = new AuthDto.RegisterRequest();
-            adminReq.setUsername("admin");
-            adminReq.setEmail("admin@sentinel.sec");
-            adminReq.setPassword("Admin@123");
-            adminReq.setFullName("Sentinel Administrator");
-            adminReq.setRoles(Set.of("ADMIN", "ANALYST", "VIEWER"));
-            authService.registerUser(adminReq);
-            log.info("Seeded Admin user (admin / Admin@123)");
-        }
-
-        if (!userRepository.existsByUsername("analyst")) {
-            AuthDto.RegisterRequest analystReq = new AuthDto.RegisterRequest();
-            analystReq.setUsername("analyst");
-            analystReq.setEmail("analyst@sentinel.sec");
-            analystReq.setPassword("Analyst@123");
-            analystReq.setFullName("Sarah Jenkins (Lead SOC Analyst)");
-            analystReq.setRoles(Set.of("ANALYST", "VIEWER"));
-            authService.registerUser(analystReq);
-            log.info("Seeded Analyst user (analyst / Analyst@123)");
-        }
-
-        if (!userRepository.existsByUsername("viewer")) {
-            AuthDto.RegisterRequest viewerReq = new AuthDto.RegisterRequest();
-            viewerReq.setUsername("viewer");
-            viewerReq.setEmail("viewer@sentinel.sec");
-            viewerReq.setPassword("Viewer@123");
-            viewerReq.setFullName("Alex Vance (Security Auditor)");
-            viewerReq.setRoles(Set.of("VIEWER"));
-            authService.registerUser(viewerReq);
-            log.info("Seeded Viewer user (viewer / Viewer@123)");
-        }
+        // Users are managed dynamically via signup and initial bootstrap admin.
+        // We do not hardcode default passwords or credentials in source code.
+        log.info("Checking initial RBAC role definitions...");
     }
 
     private void seedRules() {

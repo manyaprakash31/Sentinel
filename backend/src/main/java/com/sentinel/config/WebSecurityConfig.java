@@ -61,19 +61,22 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/bootstrap-admin").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/api/services/health-check/**").permitAll()
-                        // Ingestion can be permitted or require analyst/admin
+                        // Ingestion
                         .requestMatchers("/api/events/ingest").permitAll()
+                        // General authenticated endpoints
+                        .requestMatchers("/api/auth/me").authenticated()
                         .requestMatchers("/api/events/**").authenticated()
                         .requestMatchers("/api/alerts/**").authenticated()
                         .requestMatchers("/api/incidents/**").authenticated()
                         .requestMatchers("/api/dashboard/**").authenticated()
                         .requestMatchers("/api/services/**").authenticated()
-                        // Admin restricted
-                        .requestMatchers("/api/rules/**").hasAnyRole("ADMIN", "ANALYST")
+                        // Admin restricted endpoints
+                        .requestMatchers("/api/rules/**").authenticated()
                         .requestMatchers("/api/audit-logs/**").hasRole("ADMIN")
+                        .requestMatchers("/api/auth/users/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 );

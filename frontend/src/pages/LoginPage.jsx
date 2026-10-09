@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Shield, Lock, User, AlertCircle, ArrowRight } from 'lucide-react';
+import { Shield, Lock, User, AlertCircle, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 export const LoginPage = () => {
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('Admin@123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -14,9 +15,15 @@ export const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (!username.trim() || !password) {
+      setError('Please provide both username/email and password.');
+      return;
+    }
+
     setLoading(true);
     try {
-      await login(username, password);
+      await login(username.trim(), password);
       navigate('/');
     } catch (err) {
       setError(err.message || 'Authentication failed. Please verify credentials.');
@@ -25,20 +32,15 @@ export const LoginPage = () => {
     }
   };
 
-  const setDemoCreds = (u, p) => {
-    setUsername(u);
-    setPassword(p);
-  };
-
   return (
     <div className="min-h-screen bg-[#07090e] flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Decorative cyber grid lines */}
+      {/* Decorative cyber grid background */}
       <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-25"></div>
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <div className="w-full max-w-md relative z-10">
         <div className="glass-panel rounded-2xl p-8 border border-slate-800 shadow-2xl backdrop-blur-2xl">
-          {/* Header */}
+          {/* Header & Sentinel Branding */}
           <div className="text-center mb-8">
             <div className="inline-flex p-3 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 mb-4 shadow-[0_0_20px_rgba(0,240,255,0.25)]">
               <Shield className="w-8 h-8" />
@@ -61,7 +63,7 @@ export const LoginPage = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">
-                Username
+                Username or Email
               </label>
               <div className="relative">
                 <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -70,7 +72,8 @@ export const LoginPage = () => {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="analyst.user"
+                  placeholder="Enter your username or email"
+                  autoComplete="username"
                   className="w-full bg-[#0d1117]/80 border border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition"
                 />
               </div>
@@ -83,13 +86,22 @@ export const LoginPage = () => {
               <div className="relative">
                 <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full bg-[#0d1117]/80 border border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition"
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                  className="w-full bg-[#0d1117]/80 border border-slate-700 rounded-lg pl-10 pr-10 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition"
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 
@@ -103,34 +115,17 @@ export const LoginPage = () => {
             </button>
           </form>
 
-          {/* Quick Demo Credentials */}
-          <div className="mt-8 pt-6 border-t border-slate-800 text-xs">
-            <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block mb-2 text-center">
-              Quick Switch Demo Roles
-            </span>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => setDemoCreds('admin', 'Admin@123')}
-                className="py-1.5 px-2 rounded bg-slate-800/60 hover:bg-slate-700 border border-slate-700 text-cyan-300 font-mono text-[11px] text-center transition"
+          {/* Link to Signup */}
+          <div className="mt-8 pt-6 border-t border-slate-800 text-center">
+            <p className="text-xs text-slate-400">
+              Don't have an operator account?{' '}
+              <Link
+                to="/signup"
+                className="text-cyan-400 hover:text-cyan-300 font-semibold underline underline-offset-4 transition"
               >
-                ADMIN
-              </button>
-              <button
-                type="button"
-                onClick={() => setDemoCreds('analyst', 'Analyst@123')}
-                className="py-1.5 px-2 rounded bg-slate-800/60 hover:bg-slate-700 border border-slate-700 text-amber-300 font-mono text-[11px] text-center transition"
-              >
-                ANALYST
-              </button>
-              <button
-                type="button"
-                onClick={() => setDemoCreds('viewer', 'Viewer@123')}
-                className="py-1.5 px-2 rounded bg-slate-800/60 hover:bg-slate-700 border border-slate-700 text-slate-300 font-mono text-[11px] text-center transition"
-              >
-                VIEWER
-              </button>
-            </div>
+                Create an Account
+              </Link>
+            </p>
           </div>
         </div>
       </div>

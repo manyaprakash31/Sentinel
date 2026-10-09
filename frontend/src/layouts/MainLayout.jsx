@@ -26,7 +26,7 @@ export const MainLayout = () => {
     { label: 'Security Events', path: '/events', icon: Radio, show: true },
     { label: 'Alerts', path: '/alerts', icon: Bell, show: true },
     { label: 'Incidents', path: '/incidents', icon: AlertTriangle, show: true },
-    { label: 'Detection Rules', path: '/rules', icon: Sliders, show: isAnalyst() },
+    { label: 'Detection Rules', path: '/rules', icon: Sliders, show: isAdmin() },
     { label: 'Services', path: '/services', icon: Server, show: true },
     { label: 'Audit Logs', path: '/audit-logs', icon: FileText, show: isAdmin() },
     { label: 'Administration', path: '/admin', icon: Users, show: isAdmin() },
